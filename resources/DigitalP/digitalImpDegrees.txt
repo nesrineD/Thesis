@@ -1,0 +1,12 @@
+implication  ,  degree 
+imag , 25
+role , 8
+media , 8
+opinion , 8
+amount , 6
+form , 6
+pleasur , 6
+apparit , 6
+commerc , 5
+societi , 4
+photographi , 4

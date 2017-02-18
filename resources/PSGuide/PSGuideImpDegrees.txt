@@ -1,0 +1,15 @@
+implication  ,  degree 
+speak , 72
+effect , 60
+skill , 47
+public , 43
+guid , 37
+audienc , 28
+present , 19
+recruit , 16
+commun , 16
+soft , 16
+import , 13
+career , 12
+place , 10
+power , 10

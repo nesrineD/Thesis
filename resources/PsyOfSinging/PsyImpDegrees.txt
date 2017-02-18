@@ -1,0 +1,14 @@
+implication  ,  degree 
+breath , 76
+air , 29
+expir , 24
+studi , 19
+chest , 16
+mode , 15
+practic , 14
+muscl , 13
+import , 10
+sing , 10
+control , 9
+vocalist , 8
+tone , 5

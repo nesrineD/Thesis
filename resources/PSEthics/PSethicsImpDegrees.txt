@@ -1,0 +1,11 @@
+implication  ,  degree 
+public , 62
+speak , 62
+messag , 41
+speech , 30
+audienc , 24
+book , 24
+media , 17
+relev , 14
+prepar , 13
+present , 11

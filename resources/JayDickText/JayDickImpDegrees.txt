@@ -1,0 +1,8 @@
+implication  ,  degree 
+technolog , 19
+photo , 19
+advanc , 19
+digit , 19
+cost , 15
+camera , 15
+photograph , 4

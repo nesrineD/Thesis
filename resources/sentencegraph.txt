@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:schemLocation="http://graphml.graphdrawing.org/xmlns &#xA; &#x9; http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml">
+  <key id="d0" for="node" yfiles.type="nodegraphics" />
+  <key id="d4" for="edge" yfiles.type="edgegraphics" />
+  <graph id="G" edgedefault="directed" />
+</graphml>

@@ -1,0 +1,2 @@
+cluster ID 3 list of vertices  [advanc, digit, camera, technolog, photo, cost, can, platform, combin, lightroom, unlock, potenti, mean, photoshop, rise, along, internet, purchas, publish, marketplac, true, adob, fact, fraction, year, competit, model, superior, previou, rapid]
+cluster ID 30 list of vertices  [photograph, time, excit, never]
