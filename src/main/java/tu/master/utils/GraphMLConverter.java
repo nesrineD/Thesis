@@ -20,6 +20,7 @@ import org.jdom2.Namespace;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import tu.master.ConceptDetection.GraphCreation;
 import tu.master.ConceptDetection.Helper;
 
 /**
@@ -46,8 +47,7 @@ public class GraphMLConverter {
 	 * @param tedges the list of testing edges
 	 * @throws IOException
 	 */
-	public void convert(String fileName, List<String> nodes, List<Edge<String, String>> edges, List<String> tnodes,
-			List<Edge<String, String>> tedges)
+	public void convert(String fileName, List<String> nodes, List<Edge<String, String>> edges,List<String> tnodes, List<Edge<String, String>> tedges)
 			throws IOException {
 		// graphml document header
 		Element graphml = new Element("graphml", "http://graphml.graphdrawing.org/xmlns");
@@ -87,21 +87,15 @@ public class GraphMLConverter {
 		for (int i = 0; i < nodes.size(); i++) {
 			int id = nodes.indexOf(nodes.get(i));
 			String node = nodes.get(i);
-			// same is used to test if the node is an overlapping node, in this
-			// case use pink as a color
-			//Optional<String> same = tnodes.stream().filter(p -> p.equals(node)).findAny();
 			addNode(id, node, graph, graphml);
+			// addTNode for testing node
 		}
 		
 		for (int i = 0; i < edges.size(); i++) {
 			Edge<String, String> edge = edges.get(i);
 			int id = edges.indexOf(edge);
-			// System.out.println(" id of the edge "+edges.get(i) + " index " +i
-			// + " is " + id);
 			String source = edge.getSource();
-			// URL urlsrc = new URL ("http://"+source) ;
 			String target = edge.getTarget();
-			// URL urltarget = new URL ("http://"+target) ;
 			String value = edge.getValue();
 			int idSource = nodes.indexOf(source);
 			int idTarget = nodes.indexOf(target);
@@ -123,11 +117,9 @@ public class GraphMLConverter {
 				for (int i = 0; i < tnodes.size(); i++) {
 					int id = tnodes.indexOf(tnodes.get(i));// + 8000;
 					String tnode = tnodes.get(i);
-					// add the testing node only if it doesn't already exist
-					//Optional<String> same = nodes.stream().filter(p -> p.equals(tnode)).findAny();
-					//if (!same.isPresent()) {
+					
 						addTNode(id, tnode, graph, graphml);
-					//}
+					
 				}
 				
 				for (int i = 0; i < tedges.size(); i++) {
@@ -145,12 +137,12 @@ public class GraphMLConverter {
 					/*if (!same.isPresent())
 						idSource = tnodes.indexOf(source) + 8000;
 					else*/
-						idSource = tnodes.indexOf(source);
+					idSource = tnodes.indexOf(source);
 					int idTarget = 0;
 					//Optional<String> tsame = nodes.stream().filter(p -> p.equals(target)).findAny();
 					
 						
-					if (value.equals("impl")){	
+				if (value.equals("impl")){	
 						System.out.println ( "implication edge ");
 						int idn = nodes.indexOf(target);
 						String node = nodes.get(idn);
@@ -263,8 +255,8 @@ public class GraphMLConverter {
 		nodeLabel.setText(node2);
 		shapeNode.addContent(nodeLabel);
 		// map clusterID, list of nodes
-		Map<Long, List<String>> map = Helper.getVertMapping();
-	    System.out.println(" the map size " + map.size());
+		Map<Long, List<String>> map = GraphCreation.getVertMapping();
+	   // System.out.println(" the map size " + map.size());
 		Iterator<Map.Entry<Long, List<String>>> p = map.entrySet().iterator();
 		//k = clusterID
 		Long k = 0L;
@@ -274,7 +266,7 @@ public class GraphMLConverter {
 			for (String value : list) {
 				if (value.equals(node2)) {
 					k = key;
-					System.out.println(" node"+ value+" in the list and the key is"+ k + "should have color " + Helper.clusterColoring().get(k));
+					//System.out.println(" node"+ value+" in the list and the key is"+ k + "should have color " + GraphCreation.clusterColoring().get(k));
 				}
 				
 			}
@@ -282,19 +274,19 @@ public class GraphMLConverter {
 		// code for color change for overlapping nodes (if the node is present)
 		//map clusterID, color
 		//Helper helper = new Helper();
-		Map<Long, String> color = Helper.clusterColoring();
+		Map<Long, String> color = GraphCreation.clusterColoring();
 		// System.out.println(" the );
 		// if (!same.isPresent()) {
 		Element Fill = new Element("Fill", yns);
 		if (k!=0L){
-		Fill.setAttribute("color", Helper.clusterColoring().get(k));
-		System.out.println("  key is "+ k + " color is "+ Helper.clusterColoring().get(k)+ " node " +node2 );
+		Fill.setAttribute("color", GraphCreation.clusterColoring().get(k));
+		//System.out.println("  key is "+ k + " color is "+ GraphCreation.clusterColoring().get(k)+ " node " +node2 );
 		shapeNode.addContent(Fill);
 		}
 		
-	   else {
-			System.out.println("  key is null  "+ k + " color is "+ Helper.clusterColoring().get(k)+ "node" +node2 );		
-		}
+	  /* else {
+			System.out.println("  key is null  "+ k + " color is "+ GraphCreation.clusterColoring().get(k)+ "node" +node2 );		
+		}*/
 		/*
 		 * Element Fill = new Element("Fill", yns); Fill.setAttribute("color",
 		 * "#FF00FF"); shapeNode.addContent(Fill); * }

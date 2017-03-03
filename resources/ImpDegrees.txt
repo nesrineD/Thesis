@@ -1,2 +1,6 @@
-implication is fanhas degree 4
-implication is foodhas degree 4
+implication is technologhas degree 1
+implication is fieldhas degree 3
+implication is photohas degree 1
+implication is advanchas degree 1
+implication is photographihas degree 3
+implication is digithas degree 4
