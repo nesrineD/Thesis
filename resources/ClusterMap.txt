@@ -1,1 +1,0 @@
-cluster ID 5 list of vertices  [eat, anim, cat, banana, yellow, yesterdai]

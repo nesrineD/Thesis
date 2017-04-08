@@ -10,8 +10,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.flink.api.java.LocalEnvironment;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
@@ -53,6 +55,15 @@ public class Helper {
 	public void setEdges(List<Tuple3<String, String, String>> edges) {
 		this.edges = edges;
 	}
+List<Tuple3<String, String, String>> impEdges = new ArrayList<Tuple3<String, String, String>>();
+	
+	public List<Tuple3<String, String, String>> getImpEdges() {
+		return impEdges;
+	}
+	
+	public void setImpEdges(List<Tuple3<String, String, String>> impEdges) {
+		this.impEdges = impEdges;
+	}
 	
 	List<Tuple3<String, String, String>> tedges = new ArrayList<Tuple3<String, String, String>>();
 	static Set<String> impSet = new HashSet<String>();
@@ -78,7 +89,14 @@ public class Helper {
 	}
 	
 	private List<String> nodesList = new ArrayList<String>();
+	private List<String> impNodesList = new ArrayList<String>();
+	public List<String> getImpNodesList() {
+		return impNodesList;
+	}
 
+	public void setImpNodesList(List<String> impNodesList) {
+		this.impNodesList = impNodesList;
+	}
 	private List<IndexedWord> listOfvertices = new ArrayList<IndexedWord>();
 	private List<IndexedWord> listOftvertices = new ArrayList<IndexedWord>();
 	

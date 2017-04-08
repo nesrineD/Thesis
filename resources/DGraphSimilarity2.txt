@@ -1,0 +1,1 @@
+the similarity between resources\PsyOfSinging\PsyLabeld.txt and resources\Dreams\DreamPsyLab.txtdistance  4 is 0.03846154

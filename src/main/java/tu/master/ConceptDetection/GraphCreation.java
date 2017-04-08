@@ -60,10 +60,18 @@ public class GraphCreation {
 		return trainingGraph;
 	}
 	
-	public void setTrainingGraph(Graph<String, Long, String> trainingGraph) {
-		this.trainingGraph = trainingGraph;
+	public void setTrainingGraph(Graph<String, Long, String> graph) {
+		this.trainingGraph = graph;
 	}
-	
+	Graph<String, Long, String> implicationGraph = null;
+	public Graph<String, Long, String> getImplicationGraph() {
+		return implicationGraph;
+	}
+
+	public void setImplicationGraph(Graph<String, Long, String> implicationGraph) {
+		this.implicationGraph = implicationGraph;
+	}
+
 	List<Tuple3<String, String, String>> tedges = new ArrayList<Tuple3<String, String, String>>();
 	public List<Tuple3<String, String, String>> getTedges() {
 		return tedges;
@@ -109,6 +117,7 @@ public class GraphCreation {
 		conf.setFloat(ConfigConstants.TASK_MANAGER_MEMORY_FRACTION_KEY, 0.3f);
 		env =  LocalEnvironment.createLocalEnvironment(conf);
 	}
+	
 	/**
 	 * @param edges: list of edges
 	 * @return the graph
