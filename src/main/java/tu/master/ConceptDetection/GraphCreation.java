@@ -153,7 +153,7 @@ public class GraphCreation {
 	 * 
 	 * @throws Exception
 	 */
-	public void clustering(Graph<String, Long, String> graph)
+	public void clustering(Graph<String, Long, String> graph, String path)
 			
 			throws Exception {
 		
@@ -225,7 +225,7 @@ public class GraphCreation {
 		logger.info(" the tuple list (vertex id, degree, clusterID) ordered  according to the degree");
 		tuplList.forEach(logger::info);
 		logger.info("\n--------------------------------------- the ordered map ---------------------------------------\n");
-		Map<Long, List<String>> map2 = NodesMapping(tuplList); //
+		Map<Long, List<String>> map2 = NodesMapping(tuplList, path); //
 		setVertMapping(map2);
 	}
 	
@@ -237,15 +237,14 @@ public class GraphCreation {
 	 *         to their degrees
 	 * @throws FileNotFoundException
 	 */
-	private Map<Long, List<String>> NodesMapping(List<Tuple3<String, LongValue, Long>> tuplList)
+	private Map<Long, List<String>> NodesMapping(List<Tuple3<String, LongValue, Long>> tuplList, String PathToNodesMap)
 			throws FileNotFoundException {
 		List<Tuple2<String, Long>> verList = new ArrayList<Tuple2<String, Long>>();
 		for (Tuple3<String, LongValue, Long> tpl : tuplList) {
 			Tuple2<String, Long> t = new Tuple2<String, Long>(tpl.f0, tpl.f2);
 			verList.add(t);
 		}
-		out = new PrintStream(new FileOutputStream("resources\\NodesMap.txt"));
-		verList.forEach(s -> out.println(s));
+		
 		Map<Long, List<String>> map = new HashMap<Long, List<String>>();
 		for (Tuple2<String, Long> item : verList) {
 			
@@ -256,6 +255,9 @@ public class GraphCreation {
 			}
 			list.add(item.f0);
 		}
+		
+		out = new PrintStream(new FileOutputStream(PathToNodesMap));
+		map.forEach((k,v) -> out.println(" cluster ID " +k + "list of nodes "+v));
 		return map;
 		
 	}
@@ -366,6 +368,7 @@ public class GraphCreation {
 			throws Exception {
 		
 		execution();
+		// add implications to the list of edges
 		addImplications();
 		DataSet<Tuple3<String, String, String>> Edges = env.fromCollection(edges);
 		Graph<String, NullValue, String> graph = Graph.fromTupleDataSet(Edges, env);

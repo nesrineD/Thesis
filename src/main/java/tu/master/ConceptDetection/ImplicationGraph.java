@@ -33,6 +33,7 @@ public class ImplicationGraph {
 	}
 	LocalEnvironment env;
 	List<String> impNodeList = new ArrayList<String>();
+	
 
 	public List<String> getImpNodeList() {
 		return impNodeList;
@@ -76,8 +77,8 @@ public class ImplicationGraph {
 				sentImp.add(impTup);
 			}
 		}
-		System.out.println("sentence            ,  index   ,   Implications");
-		sentImp.forEach(System.out::println);
+		//System.out.println("sentence            ,  index   ,   Implications");
+		//sentImp.forEach(System.out::println);
 		// list of implications which corresponding sentences have a distance of
 		// max
 		//setImplications(createImplicationEdges(sentImp));
@@ -97,8 +98,8 @@ public class ImplicationGraph {
 
 			}
 		}
-		System.out.println("listOfImp 1            ,  listOfImp 2");
-		listOfImp.forEach(System.out::println);
+		//System.out.println("listOfImp 1            ,  listOfImp 2");
+		//listOfImp.forEach(System.out::println);
 		List<Tuple3<String, String, String>> edges = new ArrayList<Tuple3<String, String, String>>();
 
 		// create implication graph
@@ -115,7 +116,7 @@ public class ImplicationGraph {
 				edges.add(e);
 			}
 			// close implications
-			for (int i = 0; i < tupl.f0.size() ; i++) {
+			/*for (int i = 0; i < tupl.f0.size() ; i++) {
 				for (int j = 0; j < tupl.f1.size() ; j++) {
 					
 				
@@ -123,7 +124,7 @@ public class ImplicationGraph {
 					tupl.f1.get(j), "f");
 			edges.add(nextImp);
 				}
-			}
+			}*/
 		}
 		List<Tuple3<String, String, String>>  impEdges = edges.stream().distinct().collect(Collectors.toList());
 		/*System.out.println(" list of implication edges     ");
@@ -131,12 +132,10 @@ public class ImplicationGraph {
 	return impEdges;
 	}
 	
-	public Graph<String, NullValue, String> implGraph(String pathToTrainingText,int distance) throws Exception {
+	public Graph<String, Long, String> implGraph(String pathToTrainingText,int distance) throws Exception {
 
 		execution();
 		List<Tuple3<String, String, String>> listOfAllEdges = createImplicationEdges(generateImplications( pathToTrainingText),distance);
-		//System.out.println(" list of all edges     ");
-		//listOfAllEdges.forEach(System.out::println);
 		DataSet<Tuple3<String, String, String>> Edges = env
 				.fromCollection(listOfAllEdges);
 		Graph<String, NullValue, String> graph = Graph.fromTupleDataSet(Edges, env);
@@ -144,18 +143,26 @@ public class ImplicationGraph {
 		setImpEdgelist(edgeSet.collect());
 		DataSet<Vertex<String, NullValue>> vertices = graph.getVertices();
 		List<Vertex<String, NullValue>> list = vertices.collect();
-
+		List<Vertex<String, Long>> vlist = new ArrayList<Vertex<String, Long>>();
 		for (int i = 0; i < list.size(); i++) {
 			String v = list.get(i).f0;
+			Vertex<String, Long> vertex = new Vertex<String, Long>(v, 1L);
+			vlist.add(vertex);
 			getImpNodeList().add(v);
 		}
-
-		return graph;
+		
+		
+		
+		DataSet<Vertex<String, Long>> vertex = env.fromCollection(vlist);
+		Graph<String, Long, String> fgraph = Graph.fromDataSet(vertex, edgeSet, env);
+		
+		
+		return fgraph;
 	}
 
-	public Graph<String, NullValue, String> implicationGraph(String pathToTrainingText, String pathToImpgraphml, int distance) throws Exception {
+	public Graph<String, Long, String> implicationGraph(String pathToTrainingText, String pathToImpgraphml, int distance) throws Exception {
 		GraphCreation gcreate = new GraphCreation();
-		Graph<String, NullValue, String> impGraph = implGraph( pathToTrainingText, distance);
+		Graph<String, Long, String> impGraph = implGraph( pathToTrainingText, distance);
 		gcreate.visualizeGraph(pathToImpgraphml, getImpNodeList(), getImpEdgelist(), null, null);
 		return impGraph;
 	}

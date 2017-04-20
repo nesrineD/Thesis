@@ -1,0 +1,2 @@
+the implication graph similarity between resources\Dreams\DreamPsyLab.txt and resources\PsyOfDreams\PsyDreamsLabled.txtdistance  4 is 
+0.27695012

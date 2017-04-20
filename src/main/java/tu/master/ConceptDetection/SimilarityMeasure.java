@@ -25,12 +25,12 @@ import org.apache.flink.types.NullValue;
 
 public class SimilarityMeasure {
 
-	public List<Tuple2<String, List<String>>> NeighborsFinder(Graph<String, NullValue, String> impgraph1,
-			List<Vertex<String, NullValue>> listOfVertices) throws Exception {
+	public List<Tuple2<String, List<String>>> NeighborsFinder(Graph<String, Long, String> impgraph1,
+			List<Vertex<String, Long>> listOfVertices) throws Exception {
 
 		List<Tuple2<String, List<String>>> listOfAllNeighbors = new ArrayList<Tuple2<String, List<String>>>();
 		List<Edge<String, String>> listOfEdges = impgraph1.getEdges().collect();
-		for (Vertex<String, NullValue> v : listOfVertices) {
+		for (Vertex<String, Long> v : listOfVertices) {
 			List<String> neighborList = new ArrayList<String>();
 
 			for (Edge<String, String> edge : listOfEdges) {
@@ -48,10 +48,10 @@ public class SimilarityMeasure {
 		return listOfAllNeighbors;
 	}
 
-	public float computeSimRank(Graph<String, NullValue, String> impgraph1,
+	public float computeSimRank(Graph<String, Long, String> impgraph1,
 
-			Graph<String, NullValue, String> impgraph2, List<Vertex<String, NullValue>> listOfVertices,
-			List<Vertex<String, NullValue>> listOfbVertices) throws Exception {
+			Graph<String, Long, String> impgraph2, List<Vertex<String, Long>> listOfVertices,
+			List<Vertex<String, Long>> listOfbVertices) throws Exception {
 		List<Tuple2<String, List<String>>> listofNeighborsA = NeighborsFinder(impgraph1, listOfVertices);
 		//listofNeighborsA.forEach(System.out::println);
 		List<Tuple2<String, List<String>>> listofNeighborsB = NeighborsFinder(impgraph2, listOfbVertices);
@@ -62,8 +62,8 @@ public class SimilarityMeasure {
 		// float initialRank = 0f;
 
 		List<String> commonVertices = new ArrayList<String>();
-		for (Vertex<String, NullValue> a : listOfVertices) {
-			for (Vertex<String, NullValue> b : listOfbVertices) {
+		for (Vertex<String, Long> a : listOfVertices) {
+			for (Vertex<String, Long> b : listOfbVertices) {
 				//Tuple2<String, String> ab = new Tuple2<String, String>(a.f0, b.f0);
 				if (a.equals(b)) {
 					commonVertices.add(a.f0);
@@ -102,7 +102,7 @@ public class SimilarityMeasure {
 					}
 				}
 				if (ia.size() != 0 && ib.size()!=0)
-					rank = sum / Math.max(ia.size(),ib.size());
+					rank = sum / Math.min(ia.size(),ib.size());
 				else if (ia.size() == 0 && ib.size()==0)
 					    rank = 1;
 					else 

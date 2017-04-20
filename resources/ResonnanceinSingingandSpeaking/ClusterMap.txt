@@ -1,0 +1,5 @@
+ cluster ID 114list of nodes [voic, chest, first, function, cultiv, user, receiv, requisit, well-develop, therefor, complet, second, henc, attent]
+ cluster ID 85list of nodes [adjust, reson, induc, lack, proper, larg, fault]
+ cluster ID 60list of nodes [lung, keep, full, good, nearli, wai]
+ cluster ID 61list of nodes [muscl, expir, inspir, set, on, two, respir, intercost, rib, chief, depress, diaphragm, elev, abdomin, respiratori, twenti, four, princip]
+ cluster ID 14list of nodes [breath, sing, tone, singer, practic, speak, vocal, wast, phrase, exhaust, success, anoth, control, word, speaker, best, never, amount, allow, produc, come, someth, correct, strain, exhal, requir, becom, take, count, breather, applic, interv, syllabl, thirti, determin, train, properli, power, caus, question, can, amplif, noth, punctuat, poor, forti, perform, us, feel, public, suppos, abl, strang, complex, howev, conveni, profession, casual, note, failur, healthi, accord, normal, sai, apparatu, equal, everi, undisciplin, gener, statement, correctli, without, must, alwai, contrast]

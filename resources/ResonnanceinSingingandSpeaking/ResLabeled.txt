@@ -1,1 +1,302 @@
-It has been said that breathing is singing, this statement is equally applicable to speaking. [breathing, singing]. Without properly controlled breathing the best singing or speaking tone cannot be produced, for tone is but vocalized breath. [breathing, tone, vocal]. Hence in the cultivation of the voice, breathing is the first function to receive attention. [voice, breathing]. For singer or speaker, the correct use of the breathing apparatus determines the question of success or failure. [breathing, success]. For a voice user, therefore, the first requisite is a well-developed chest, the second, complete control of it. [voice, chest]. It must not be supposed that a singer's breathing is something strange or complex, for it is nothing more than an amplification of normal, healthy breathing. [singing, breathing]. In contrast, however, to the undisciplined casual breathing of the general public, the singer is a professional breather. [singing, breathing]. There are two sets of respiratory muscles, one for inspiration and another for expiration, twenty two or more in all. [respiration, muscles]. The principal muscles of inspiration are the diaphragm and the intercostal muscles that elevate the ribs. [inspiration, muscle]. The chief muscles of expiration are the four sets of abdominal muscles and the intercostal muscles that depress the ribs. [expiration, muscle]. The correctly trained singer or speaker will never allow the breath power to be exhausted. [practice, breath, strain]. Some breath should be taken in at every convenient interval between the words, according to the punctuation, but never between syllables of a word, this is correct phrasing. [breath, phrasing]. In this way the lungs are kept nearly full, and breathing is at its best. [lungs, good, breath]. The chief cause of breath exhaustion is wasted breath. [breath, exhaustion]. This waste comes from exhaling more breath than the tone requires, and breath that does not become tone is wasted. [breath, expiration, amount, tone]. This fault is largely induced by lack of proper resonance adjustment. [resonance, adjustement]. The singer should always feel able to sing another note or to speak another word. [singer]. To sing or speak thirty or forty counts with one breath is useful practice but poor performance. [singing, breath, practice]. 
+It has been said that breathing is singing, this statement is equally applicable to speaking. [breathing, singing]. Without properly controlled breathing the best singing or speaking tone cannot be produced, for tone is but vocalized breath. [breathing, tone, vocal]. Hence in the cultivation of the voice, breathing is the first function to receive attention. [voice, breathing]. For singer or speaker, the correct use of the breathing apparatus determines the question of success or failure. [breathing, success]. For a voice user, therefore, the first requisite is a well-developed chest, the second, complete control of it. [voice, chest]. It must not be supposed that a singer's breathing is something strange or complex, for it is nothing more than an amplification of normal, healthy breathing. [singing, breathing]. In contrast, however, to the undisciplined casual breathing of the general public, the singer is a professional breather. [singing, breathing]. There are two sets of respiratory muscles, one for inspiration and another for expiration, twenty two or more in all. [respiration, muscles]. The principal muscles of inspiration are the diaphragm and the intercostal muscles that elevate the ribs. [inspiration, muscle]. From a06c3e4738b6e0fd74c07c34a7a71933d38d485f Mon Sep 17 00:00:00 2001
+From: James Fry <james.fry@jrfsolutions.co.uk>
+Date: Mon, 11 Aug 2014 11:51:52 +0100
+Subject: [PATCH] Cannot override static members - replacing fields with
+
+diff --git a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/RelatednessCalculator.java b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/RelatednessCalculator.java
+index ddb6631..428c1bd 100644
+--- a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/RelatednessCalculator.java
++++ b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/RelatednessCalculator.java
+@@ -26,8 +26,10 @@ public abstract class RelatednessCalculator {
+ 	protected PathFinder pathFinder;
+ 	protected DepthFinder depthFinder;
+ 	
+-	public RelatednessCalculator( ILexicalDatabase db ) {
++	public RelatednessCalculator( ILexicalDatabase db, double min, double max ) {
+ 		this.db = db;
++		this.min = min;
++		this.max = max;
+ 		pathFinder = new PathFinder(db);
+ 		depthFinder = new DepthFinder(db);
+ 	}
+@@ -42,6 +44,9 @@ public abstract class RelatednessCalculator {
+ 	}
+ 	
+ 	private WordSimilarityCalculator wordSimilarity = new WordSimilarityCalculator();
++	
++	protected final double min;
++	protected final double max;
+ 
+ 	// abstract hook method to be implemented
+ 	protected abstract Relatedness calcRelatedness( Concept synset1, Concept synset2 );
+@@ -76,4 +81,12 @@ public abstract class RelatednessCalculator {
+ 		return db;
+ 	}
+ 			
++	public double getMin() {
++		return min;
++	}
++	
++	public double getMax() {
++		return max;
++	}
++	
+ }
+diff --git a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/HirstStOnge.java b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/HirstStOnge.java
+index 14b865e..8b4cac6 100644
+--- a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/HirstStOnge.java
++++ b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/HirstStOnge.java
+@@ -14,9 +14,6 @@ import edu.cmu.lti.ws4j.util.Traverser;
+ 
+ public class HirstStOnge extends RelatednessCalculator {
+ 
+-	protected static double min = 0;
+-	protected static double max = 16;
+-
+ 	@SuppressWarnings("serial")
+ 	private static List<POS[]> posPairs = new ArrayList<POS[]>(){{
+ 		add(new POS[]{POS.n,POS.n});
+@@ -26,7 +23,7 @@ public class HirstStOnge extends RelatednessCalculator {
+ 	}};
+ 	
+ 	public HirstStOnge(ILexicalDatabase db) {
+-		super(db);
++		super(db, 0, 16);
+ 	}
+ 
+ 	@Override
+@@ -168,4 +165,5 @@ public class HirstStOnge extends RelatednessCalculator {
+ 			return ret;
+ 		}
+ 	}
++
+ }
+diff --git a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/JiangConrath.java b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/JiangConrath.java
+index 221a0e6..8158cb3 100644
+--- a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/JiangConrath.java
++++ b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/JiangConrath.java
+@@ -13,9 +13,6 @@ import edu.cmu.lti.ws4j.util.PathFinder.Subsumer;
+ 
+ public class JiangConrath extends RelatednessCalculator {
+ 
+-	protected static double min = 0; // or -Double.MAX_VALUE ?
+-	protected static double max = Double.MAX_VALUE;
+-
+ 	@SuppressWarnings("serial")
+ 	private static List<POS[]> posPairs = new ArrayList<POS[]>(){{
+ 		add(new POS[]{POS.n,POS.n});
+@@ -23,7 +20,7 @@ public class JiangConrath extends RelatednessCalculator {
+ 	}};
+ 	
+ 	public JiangConrath(ILexicalDatabase db) {
+-		super(db);
++		super(db, 0 /* or -Double.MAX_VALUE ? */, Double.MAX_VALUE);
+ 	}
+ 
+ 	@Override
+@@ -125,4 +122,5 @@ public class JiangConrath extends RelatednessCalculator {
+ 	public List<POS[]> getPOSPairs() {
+ 		return posPairs;
+ 	}
++
+ }
+diff --git a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/LeacockChodorow.java b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/LeacockChodorow.java
+index cb80fbd..5686623 100644
+--- a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/LeacockChodorow.java
++++ b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/LeacockChodorow.java
+@@ -22,9 +22,6 @@ of this scaled value.
+  */
+ public class LeacockChodorow extends RelatednessCalculator {
+ 
+-	protected static double min = 0; // or -Double.MAX_VALUE ?
+-	protected static double max = Double.MAX_VALUE;
+-
+ 	@SuppressWarnings("serial")
+ 	private static List<POS[]> posPairs = new ArrayList<POS[]>(){{
+ 		add(new POS[]{POS.n,POS.n});
+@@ -32,7 +29,7 @@ public class LeacockChodorow extends RelatednessCalculator {
+ 	}};
+ 	
+ 	public LeacockChodorow(ILexicalDatabase db) {
+-		super(db);
++		super(db, 0 /* or -Double.MAX_VALUE ? */, Double.MAX_VALUE);
+ 		// TODO Auto-generated constructor stub
+ 	}
+ 
+@@ -86,4 +83,5 @@ public class LeacockChodorow extends RelatednessCalculator {
+ 	public List<POS[]> getPOSPairs() {
+ 		return posPairs;
+ 	}
++
+ }
+diff --git a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Lesk.java b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Lesk.java
+index cff5d29..b5fb748 100644
+--- a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Lesk.java
++++ b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Lesk.java
+@@ -30,8 +30,6 @@ lesk measure has been implemented in this module.
+ @SuppressWarnings("serial")
+ public class Lesk extends RelatednessCalculator {
+ 
+-	protected static double min = 0;
+-	protected static double max = Double.MAX_VALUE;
+ 	private GlossFinder glossFinder;
+ 	
+ 	private static List<POS[]> posPairs = new ArrayList<POS[]>(){{
+@@ -47,7 +45,7 @@ public class Lesk extends RelatednessCalculator {
+ 	private StringBuilder overlapLogMax;
+ 	
+ 	public Lesk(ILexicalDatabase db) {
+-		super(db);
++		super(db, 0, Double.MAX_VALUE);
+ 		glossFinder = new GlossFinder(db);
+ 	}
+ 
+@@ -123,4 +121,5 @@ public class Lesk extends RelatednessCalculator {
+ 	public List<POS[]> getPOSPairs() {
+ 		return posPairs;
+ 	}
++
+ }
+diff --git a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Lin.java b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Lin.java
+index faa6d99..540ff81 100644
+--- a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Lin.java
++++ b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Lin.java
+@@ -13,9 +13,6 @@ import edu.cmu.lti.ws4j.util.PathFinder.Subsumer;
+ 
+ public class Lin extends RelatednessCalculator {
+ 	
+-	protected static double min = 0; // or -Double.MAX_VALUE ?
+-	protected static double max = 1;
+-	
+ 	@SuppressWarnings("serial")
+ 	private static List<POS[]> posPairs = new ArrayList<POS[]>(){{
+ 		add(new POS[]{POS.n,POS.n});
+@@ -23,7 +20,7 @@ public class Lin extends RelatednessCalculator {
+ 	}};
+ 
+ 	public Lin(ILexicalDatabase db) {
+-		super(db);
++		super(db, 0 /* or -Double.MAX_VALUE ? */, 1);
+ 		// TODO Auto-generated constructor stub
+ 	}
+ 
+@@ -60,4 +57,5 @@ public class Lin extends RelatednessCalculator {
+ 	public List<POS[]> getPOSPairs() {
+ 		return posPairs;
+ 	}
++
+ }
+diff --git a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Path.java b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Path.java
+index a98ec8b..e2ac5e5 100644
+--- a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Path.java
++++ b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Path.java
+@@ -12,9 +12,6 @@ import edu.cmu.lti.ws4j.util.PathFinder.Subsumer;
+ 
+ public class Path extends RelatednessCalculator {
+ 
+-	protected static double min = 0; // actually, (0, 1]
+-	protected static double max = 1;
+-	
+ 	@SuppressWarnings("serial")
+ 	private static List<POS[]> posPairs = new ArrayList<POS[]>(){{
+ 		add(new POS[]{POS.n,POS.n});
+@@ -22,7 +19,7 @@ public class Path extends RelatednessCalculator {
+ 	}};
+ 
+ 	public Path(ILexicalDatabase db) {
+-		super(db);
++		super(db, 0 /* actually, (0, 1] */, 1);
+ 	}
+ 
+ 	protected Relatedness calcRelatedness( Concept synset1, Concept synset2 ) {
+@@ -55,4 +52,5 @@ public class Path extends RelatednessCalculator {
+ 	public List<POS[]> getPOSPairs() {
+ 		return posPairs;
+ 	}
++
+ }
+diff --git a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Resnik.java b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Resnik.java
+index 85c41c8..8b03751 100644
+--- a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Resnik.java
++++ b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Resnik.java
+@@ -13,9 +13,6 @@ import edu.cmu.lti.ws4j.util.PathFinder.Subsumer;
+ 
+ public class Resnik extends RelatednessCalculator {
+ 
+-	protected static double min = 0;
+-	protected static double max = Double.MAX_VALUE;
+-	
+ 	@SuppressWarnings("serial")
+ 	private static List<POS[]> posPairs = new ArrayList<POS[]>(){{
+ 		add(new POS[]{POS.n,POS.n});
+@@ -23,7 +20,7 @@ public class Resnik extends RelatednessCalculator {
+ 	}};
+ 
+ 	public Resnik(ILexicalDatabase db) {
+-		super(db);
++		super(db, 0, Double.MAX_VALUE);
+ 	}
+ 
+ 	@Override
+@@ -55,4 +52,5 @@ public class Resnik extends RelatednessCalculator {
+ 	public List<POS[]> getPOSPairs() {
+ 		return posPairs;
+ 	}
++
+ }
+diff --git a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Vector.java b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Vector.java
+index 79db156..9503b76 100644
+--- a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Vector.java
++++ b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/Vector.java
+@@ -13,15 +13,12 @@ import edu.cmu.lti.ws4j.RelatednessCalculator;
+ //TODO: finish implementation
+ public class Vector extends RelatednessCalculator {
+ 
+-	protected static double min = 0;
+-	protected static double max = 1;
+-	
+ 	@SuppressWarnings("serial")
+ 	private static List<POS[]> posPairs = new ArrayList<POS[]>(){{
+ 	}};
+ 
+ 	public Vector(ILexicalDatabase db) {
+-		super(db);
++		super(db, 0, 1);
+ 		// TODO Auto-generated constructor stub
+ 	}
+ 
+@@ -37,4 +34,5 @@ public class Vector extends RelatednessCalculator {
+ 	public List<POS[]> getPOSPairs() {
+ 		return posPairs;
+ 	}
++
+ }
+diff --git a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/VectorPairs.java b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/VectorPairs.java
+index 7a94a1e..5ae8496 100644
+--- a/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/VectorPairs.java
++++ b/edu.cmu.lti.ws4j/src/main/java/edu/cmu/lti/ws4j/impl/VectorPairs.java
+@@ -12,15 +12,12 @@ import edu.cmu.lti.ws4j.RelatednessCalculator;
+ //TODO: finish implementation
+ public class VectorPairs extends RelatednessCalculator {
+ 
+-	protected static double min = 0;
+-	// max unknown...
+-	
+ 	@SuppressWarnings("serial")
+ 	private static List<POS[]> posPairs = new ArrayList<POS[]>(){{
+ 	}};
+ 
+ 	public VectorPairs(ILexicalDatabase db) {
+-		super(db);
++		super(db, 0, Double.MAX_VALUE /* max unknown... */);
+ 		// TODO Auto-generated constructor stub
+ 	}
+ 
+@@ -36,4 +33,5 @@ public class VectorPairs extends RelatednessCalculator {
+ 	public List<POS[]> getPOSPairs() {
+ 		return posPairs;
+ 	}
++
+ }
+
+

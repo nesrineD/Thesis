@@ -1,0 +1,8 @@
+ cluster ID 64list of nodes [receiv, vocalist, amount]
+ cluster ID 34list of nodes [forth]
+ cluster ID 4list of nodes [air, expir, chest, sai, stream, muscl, must, tone, pressur, oper, flow, consist, lung, charg, mechan, thorax, slowli, gentl, diaphragm, shock, without, mannstein, garcia]
+ cluster ID 71list of nodes [set, inspir]
+ cluster ID 72list of nodes [rule, sever]
+ cluster ID 11list of nodes [breath, mode, studi, import, sing, practic, number, five, hold, requir, control, differ, vocal, practis, foundat, argument, action, manner, consid, discuss, go, manag, scienc, costal, develop, take, later, deep-abdomin, economi, advoc, school, begin, vital, acquir, singer, advanc, exhaust, diaphragmatic-abdomin, theoret, clavicular, fix, high, occas, daili, student, long, back, detail, gener, possibl, which, earli, variou, author, suffici, vogu, muscular, order]
+ cluster ID 91list of nodes [attent, scientist, vast, therefor, subject]
+ cluster ID 63list of nodes [put]

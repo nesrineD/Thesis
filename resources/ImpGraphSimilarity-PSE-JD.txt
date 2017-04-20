@@ -1,0 +1,2 @@
+the implication graph similarity between resources\PSEthics\PSethicsLabeled.txt and resources\JayDickText\JayDickLabled.txtdistance  4 is 
+0.1

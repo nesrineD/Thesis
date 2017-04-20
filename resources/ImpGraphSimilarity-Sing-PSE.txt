@@ -1,0 +1,2 @@
+the implication graph similarity between resources\PsyOfSinging\PsyLabeld.txt and resources\PSEthics\PSethicsLabeled.txtdistance  4 is 
+0.0

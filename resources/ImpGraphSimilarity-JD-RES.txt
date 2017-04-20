@@ -1,0 +1,2 @@
+the implication graph similarity between resources\JayDickText\JayDickLabled.txt and resources\ResonnanceinSingingandSpeaking\ResLabeled.txtdistance  4 is 
+0.0

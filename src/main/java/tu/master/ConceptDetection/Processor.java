@@ -20,7 +20,9 @@ import javax.swing.JFrame;
 
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.LocalEnvironment;
+import org.apache.flink.api.java.io.CsvReader;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.ConfigConstants;
@@ -46,10 +48,10 @@ public class Processor extends JFrame {
 
 	final static Logger logger = Logger.getLogger(Processor.class);
 	private PrintStream out;
-	
+
 	private BufferedReader train;
 	Helper count = new Helper();
-
+	LocalEnvironment env;
 	private PrintStream impDeg;
 	private PrintStream clusterColoring;
 	private PrintStream vetClusterMap;
@@ -58,9 +60,9 @@ public class Processor extends JFrame {
 	private PrintStream feq;
 	private PrintStream rank;
 	private PrintStream similarities;
-	boolean training = true;
+	boolean training = false;
 	private BufferedReader br;
-	
+	private String[] sentence;
 
 	private BufferedReader bufferedReader;
 
@@ -78,53 +80,100 @@ public class Processor extends JFrame {
 	 * @throws Exception
 	 */
 	protected void initWindow() throws Exception {
-		int distance = 5; 
+		int distance = 5;
 		float ranking;
-
+		float tranking;
 		if (training == true) {
+			String pathToTrainingText1 = "resources\\DigitalP\\digitalPlabled.txt";
+			String PathToNodesMap1 = "resources\\DigitalP\\ClusterMap.txt";
+			String pathToTrainingText2 = "resources\\PsyOfDreams\\PsyDreamsLabled.txt";
+			String PathToNodesMap2 = "resources\\PsyOfDreams\\ClusterMap.txt";
+			String pathToTrainingText3 = "resources\\Dreams\\DreamPsyLab.txt";
+			String PathToNodesMap3 = "resources\\Dreams\\ClusterMap.txt";
+			String pathToTrainingText4 = "resources\\PsyOfSinging\\PsyLabeld.txt";
+			String PathToNodesMap4 = "resources\\PsyOfSinging\\ClusterMap.txt";
+			String pathToTrainingText5 = "resources\\PSEthics\\PSethicsLabeled.txt";
+			String PathToNodesMap5 = "resources\\PSEthics\\ClusterMap.txt";
+			// String pathToImpgraphml1 = "resources\\f.graphml";
+			String pathTographml = "resources\\f.graphml";
+			// String pathToText = "resources\\PSEthics\\PSEthics.txt";
+			// String pathToTermFreqFile = "resources\\PSEthics\\TermFreq.txt";
+			// String pathToImpDegFile =
+			// "resources\\PSEthics\\ImplicationsDegrees.txt";
 
-			String pathToTrainingText1 = "resources\\PsyOfSinging\\PsyLabeld.txt";
-			String pathToRankFile = "resources\\DGraphSimilarity2.txt";
-			String pathToImpgraphml = "resources\\PsyOfSinging\\singImp.graphml";
-			//String pathToTrainingText1 = "resources\\DigitalP\\text.txt";
-			
-			String pathToTrainingText2 = "resources\\Dreams\\DreamPsyLab.txt";
-			String pathToImpgraphml2 = "resources\\Dreams\\DreamPsyLabImp.graphml";
-			//String pathTographml1 = "resources\\DigitalP\\digitalPlabled.graphml";*/
-			
-			//String pathToTrainingText2 = "resources\\ResonnanceinSingingandSpeaking\\ResLabeled.txt";
-			/*"resources\\DigitalP\\digitalPlabled.txt"
-			 * "resources\\JayDickText\\JayDickLabled.txt"
-			 * "resources\\PSEthics\\PSethicsLabeled.txt"
-			 * "resources\\PSGuide\\PSGuideLabeled.txt"
-			 * "resources\\PsyOfDreams\\PsyDreamsLabled.txt"
+			String pathToTrainingText6 = "resources\\JayDickText\\JayDickLabled.txt";
+			String PathToNodesMap6 = "resources\\JayDickText\\ClusterMap.txt";
+			String pathToTrainingText7 = "resources\\ResonnanceinSingingandSpeaking\\ResLabeled.txt";
+			String PathToNodesMap7 = "resources\\ResonnanceinSingingandSpeaking\\ClusterMap.txt";
+			String pathToTrainingText8 = "resources\\PSGuide\\PSGuideLabeled.txt";
+			String PathToNodesMap8 = "resources\\PSGuide\\ClusterMap.txt";
+			// String pathToImpgraphml2 =
+			// "resources\\PSGuide\\ImpPSGuide.graphml";
+			// String pathToImpgraphml2 = "resources\\f.graphml";
+			// String PathToNodesMap2 = "resources\\f.txt";
+			// String pathToText2 = "resources\\PSGuide\\PSGuide.txt";
+			// String pathToTermFreqFile2 = "resources\\PSGuide\\TermFreq.txt";
+			// String pathToImpDegFile2
+			// ="resources\\PSGuide\\ImplicationsDegrees.txt";
+			// String pathToRankFile
+			// "resources\\ImpGraphSimilarity-Res-PSG.txt";
+
+			// termFrequency(pathToText, pathToTermFreqFile);
+			// termFrequency(pathToText2, pathToTermFreqFile2);
+			// trainingGraph(pathToTrainingText1, pathTographml,
+			// PathToNodesMap1);
+			// trainingGraph(pathToTrainingText2, pathTographml,
+			// PathToNodesMap2);
+			trainingGraph(pathToTrainingText3, pathTographml, PathToNodesMap3);
+			trainingGraph(pathToTrainingText4, pathTographml, PathToNodesMap4);
+			trainingGraph(pathToTrainingText5, pathTographml, PathToNodesMap5);
+			trainingGraph(pathToTrainingText6, pathTographml, PathToNodesMap6);
+			trainingGraph(pathToTrainingText7, pathTographml, PathToNodesMap7);
+			trainingGraph(pathToTrainingText8, pathTographml, PathToNodesMap8);
+			// impDegrees(pathToImpDegFile, graph1);
+
+			// impDegrees(pathToImpDegFile2, graph2);
+			// List<Vertex<String, Long>> tlistOfVertices =
+			// graph1.getVertices().collect();
+			// List<Vertex<String, Long>> tlistOfbVertices =
+			// graph2.getVertices().collect();
+			/*
+			 * ImplicationGraph impGr1 = new ImplicationGraph(); Graph<String,
+			 * Long, String> impgraph1 =
+			 * impGr1.implicationGraph(pathToTrainingText1,pathToImpgraphml1,
+			 * distance); ImplicationGraph impGr2 = new ImplicationGraph();
+			 * Graph<String, Long, String> impgraph2 =
+			 * impGr2.implicationGraph(pathToTrainingText2, pathToImpgraphml2,
+			 * distance); List<Vertex<String, Long>> listOfVertices =
+			 * impgraph1.getVertices().collect(); List<Vertex<String, Long>>
+			 * listOfbVertices = impgraph2.getVertices().collect();
 			 * 
+			 * SimilarityMeasure sim = new SimilarityMeasure(); ranking =
+			 * sim.computeSimRank(impgraph1, impgraph2, listOfVertices,
+			 * listOfbVertices); // tranking = sim.computeSimRank(graph1,
+			 * graph2, tlistOfVertices, tlistOfbVertices); rank = new
+			 * PrintStream(new FileOutputStream(pathToRankFile));
+			 * rank.println(("the implication graph similarity between " +
+			 * pathToTrainingText1 + " and " + pathToTrainingText2 +
+			 * "distance  " + (distance - 1) + " is \n" + ranking)); //
+			 * rank.println(("the training graph similarity between " +
+			 * pathToTrainingText1 + " and " + pathToTrainingText2 // +
+			 * "distance  " + (distance - 1) + " is \n" + tranking));
 			 */
-			// Graph<String, Long, String> graph1 =
-			// trainingGraph(pathToTrainingText1, pathTographml1);
-			
-            ImplicationGraph impGr1 = new ImplicationGraph();
-			Graph<String, NullValue, String> impgraph1 = impGr1.implicationGraph(pathToTrainingText1,pathToImpgraphml, distance);
-			ImplicationGraph impGr2 = new ImplicationGraph();
-			Graph<String, NullValue, String> impgraph2 = impGr2.implicationGraph(pathToTrainingText2,pathToImpgraphml2, distance);
-			List<Vertex<String, NullValue>> listOfVertices = impgraph1.getVertices().collect();
-		 	List<Vertex<String, NullValue>> listOfbVertices = impgraph2.getVertices().collect();
-
-			SimilarityMeasure sim = new SimilarityMeasure();
-			ranking = sim.computeSimRank(impgraph1, impgraph2, listOfVertices, listOfbVertices);
-			rank = new PrintStream(new FileOutputStream(pathToRankFile));
-			rank.println(("the similarity between "+ pathToTrainingText1 + " and "+ pathToTrainingText2 + "distance  " + (distance-1) + " is " + ranking ));
-				
 
 		} else {
-
+			execution();
 			// Testing graph
 			String pathToTestgraphml = "resources\\Testing\\JayDickTest.graphml";
-
-			String pathToTrainingText = "resources\\JayDickText\\JayDickLabled.txt";
-			String pathToTestingText = "resources\\DigitalP\\digitalP.txt";
+			String pathToTrainingText = "resources\\JayDickText\\JayDickLabledT.txt";
+			String pathToTestingSentence = "resources\\JayDickText\\testingSentence.txt";
+			// String pathToTestingText = "resources\\DigitalP\\digitalP.txt";
 			Helper help = new Helper();
 			GraphCreation gcreate = new GraphCreation();
+
+			List<Tuple2<List<String>, List<String>>> sentImpMapping = new ArrayList<Tuple2<List<String>, List<String>>>();
+
+			// create the training graph
 			train = new BufferedReader(new FileReader(pathToTrainingText));
 			String readString = null;
 			while ((readString = train.readLine()) != null) {
@@ -132,47 +181,73 @@ public class Processor extends JFrame {
 			}
 
 			for (int sent = 0; sent < help.getSentences().size() - 1; sent += 2) {
+				CoreMap currentsentence = help.getSentences().get(sent);
 				List<String> vertexList = new ArrayList<String>();
-				vertexList = help.parseISentence(help.getSentences().get(sent));
-				// out = new PrintStream(new
-				// FileOutputStream("resources\\vertices.txt"));
-				// vertexList.forEach(s -> out.println(s));
+				vertexList = help.parseISentence(currentsentence);
+
+				// sentence = (String[]) vertexList.toArray();
 				help.getNodesList().addAll(vertexList);
 				help.followEdges(help.getEdges(), help.getListOfvertices());
-				help.childEdges(help.getEdges(), help.semanticGraph(help.getSentences().get(sent)));
-				if (help.parseImplication(help.getSentences().get(sent + 1)) != null) {
+				help.childEdges(help.getEdges(), help.semanticGraph(currentsentence));
+				List<String> impl = help.parseImplication(help.getSentences().get(sent + 1));
+				if (impl != null) {
 					help.addImplicationEdges(vertexList, help.parseImplication(help.getSentences().get(sent + 1)));
+					// fill the list of tuples sent, imp
+					Tuple2<List<String>, List<String>> sentTup = new Tuple2<List<String>, List<String>>(vertexList,
+							impl);
+					sentImpMapping.add(sentTup);
 				}
 
+				// store the sentence and its implications in a CSV TextFile
+
+				sentImpMapping.forEach(System.out::println);
+				DataSet<Tuple2<List<String>, List<String>>> mapping = env.fromCollection(sentImpMapping);
+				mapping.print();
+				mapping.getType();
+				mapping.writeAsCsv("resources\\mappings\\sentImpMap.csv");
+				// mapping.writeAsText("resources\\mappings\\sentImplicationMap.txt");
 			}
+		//	ExecutionEnvironment envi = ExecutionEnvironment.getExecutionEnvironment();
+		//	DataSet<Tuple2<List<String>, List<String>>> map = envi
+		//			.readCsvFile("resources\\mappings\\sentImplicationMap.csv").types(String.class, String.class);
+		//	map.
+		//	System.out.println(" reading from Dataset  \n");
+		//	map.print();
 			// initial graph = graph before clustering
 			// gcreate.setTrainingGraph(gcreate.initialGraph(help.getEdges()));
-
-			BufferedReader br = new BufferedReader(new FileReader(pathToTestingText));
-			String read = null;
-			while ((read = br.readLine()) != null) {
-				help.setTsentences(help.performAnnotation(read));
-			}
-
-			for (int sent = 0; sent < help.getTsentences().size(); sent += 1) {
-				List<String> vertexList = new ArrayList<String>();
-				vertexList = help.parseISentence(help.getTsentences().get(sent)); //
-				logger.info(" the new list is " + vertexList);
-				gcreate.getTestingList().addAll(vertexList); //
-				// parseISentence(getSentences().get(sent));
-				help.followEdges(gcreate.getTedges(), help.getListOfvertices());
-				help.childEdges(gcreate.getTedges(), help.semanticGraph(help.getTsentences().get(sent)));
-			}
-
-			Graph<String, Long, String> graph = gcreate.testingGraph(gcreate.getTedges());
-			System.out.println(" testing edges are ");
-			graph.getEdges().print();
-			gcreate.visualizeGraph(pathToTestgraphml, help.getNodesList(), gcreate.getEdgelist(),
-					gcreate.getTestingList(), gcreate.getTedgelist());
-
+			// create the testing graph
+			/*
+			 * BufferedReader br = new BufferedReader(new
+			 * FileReader(pathToTestingText)); String read = null; while ((read
+			 * = br.readLine()) != null) {
+			 * help.setTsentences(help.performAnnotation(read)); } // add follow
+			 * and child edges for (int sent = 0; sent <
+			 * help.getTsentences().size(); sent += 1) { List<String> vertexList
+			 * = new ArrayList<String>(); vertexList =
+			 * help.parseISentence(help.getTsentences().get(sent)); //
+			 * logger.info(" the new list is " + vertexList);
+			 * gcreate.getTestingList().addAll(vertexList); // //
+			 * parseISentence(getSentences().get(sent));
+			 * help.followEdges(gcreate.getTedges(), help.getListOfvertices());
+			 * help.childEdges(gcreate.getTedges(),
+			 * help.semanticGraph(help.getTsentences().get(sent))); } // call
+			 * testing graph method Graph<String, Long, String> graph =
+			 * gcreate.testingGraph(gcreate.getTedges());
+			 * System.out.println(" testing edges are ");
+			 * graph.getEdges().print();
+			 * gcreate.visualizeGraph(pathToTestgraphml, help.getNodesList(),
+			 * gcreate.getEdgelist(), gcreate.getTestingList(),
+			 * gcreate.getTedgelist());
+			 */
 			// }
 
 		}
+	}
+
+	public void execution() {
+		Configuration conf = new Configuration();
+		conf.setFloat(ConfigConstants.TASK_MANAGER_MEMORY_FRACTION_KEY, 0.3f);
+		env = LocalEnvironment.createLocalEnvironment(conf);
 	}
 
 	public void termFrequency(String pathToText, String pathToTermFreqFile) throws FileNotFoundException {
@@ -188,8 +263,8 @@ public class Processor extends JFrame {
 		orderFrequencies.forEach((k, v) -> feq.println((k + " , " + v)));
 	}
 
-	public Graph<String, Long, String> trainingGraph(String pathToTrainingText, String pathTographm1l)
-			throws Exception {
+	public Graph<String, Long, String> trainingGraph(String pathToTrainingText, String pathTographm1l,
+			String PathToNodesMap) throws Exception {
 		Helper help = new Helper();
 		GraphCreation gcreate = new GraphCreation();
 
@@ -205,8 +280,7 @@ public class Processor extends JFrame {
 			vertexList = help.parseISentence(help.getSentences().get(sent));
 			help.getNodesList().addAll(vertexList);
 			help.followEdges(help.getEdges(), help.getListOfvertices());
-			// help.childEdges(help.getEdges(),
-			// help.semanticGraph(help.getSentences().get(sent)));
+			help.childEdges(help.getEdges(), help.semanticGraph(help.getSentences().get(sent)));
 			if (help.parseImplication(help.getSentences().get(sent + 1)) != null) {
 				help.addImplicationEdges(vertexList, help.parseImplication(help.getSentences().get(sent + 1)));
 
@@ -214,14 +288,10 @@ public class Processor extends JFrame {
 		}
 		gcreate.setTrainingGraph(gcreate.initialGraph(help.getEdges()));
 		Graph<String, Long, String> graph = gcreate.getTrainingGraph();
-		gcreate.clustering(graph.getUndirected());
+		gcreate.clustering(graph.getUndirected(), PathToNodesMap);
 		gcreate.visualizeGraph(pathTographm1l, help.getNodesList(), gcreate.getEdgelist(), null, null);
 		return graph;
 	}
-
-	
-	
-	
 
 	public void impDegrees(String pathToImpDegFile, Graph<String, Long, String> graph) throws Exception {
 		Map<String, Integer> impDegree = new HashMap<String, Integer>();
@@ -248,12 +318,4 @@ public class Processor extends JFrame {
 		orderImpByDegree.forEach((k, v) -> impDeg.println((k + " , " + v)));
 	}
 
-	public List<Tuple2<String, LongValue>> getInDegree(Graph<String, Long, String> graph1) throws Exception {
-		DataSet<Tuple2<String, LongValue>> inDegrees = graph1.inDegrees();
-		List<Tuple2<String, LongValue>> inDegTupList = inDegrees.collect();
-		return inDegTupList;
-	}
-
 }
-
-// }

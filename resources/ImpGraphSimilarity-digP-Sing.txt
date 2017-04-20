@@ -1,0 +1,2 @@
+the implication graph similarity between resources\DigitalP\digitalPlabled.txt and resources\PsyOfSinging\PsyLabeld.txtdistance  4 is 
+0.009803922
