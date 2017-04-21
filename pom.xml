@@ -67,7 +67,7 @@
 			<artifactId>ws4j</artifactId>
             <version>1.0.1</version>
 			<scope>system</scope>
-			<systemPath>${java.home}/lib/ws4j.jar</systemPath>
+			<systemPath>C:\Users\Asus\Desktop\Masterarbeit\ConceptDetection\lib\ws4j.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.xerial</groupId>

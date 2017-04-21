@@ -1,16 +1,11 @@
 package tu.master.utils;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -18,16 +13,14 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import edu.cmu.lti.lexical_db.ILexicalDatabase;
 import edu.cmu.lti.lexical_db.NictWordNet;
 import edu.cmu.lti.ws4j.RelatednessCalculator;
-import edu.cmu.lti.ws4j.impl.WuPalmer;
 import edu.cmu.lti.ws4j.util.WS4JConfiguration;
 import edu.stanford.nlp.util.CoreMap;
-import tu.master.ConceptDetection.GraphCreation;
 import tu.master.ConceptDetection.Helper;
 import edu.cmu.lti.ws4j.impl.Lin;
 public class SentenceCompare {
 	
 
-	private static ILexicalDatabase db = new edu.cmu.lti.lexical_db.NictWordNet();
+	private static ILexicalDatabase db = new NictWordNet();
 	private static RelatednessCalculator rc = new Lin(db);
 	static List<Tuple2<String[], List<String>>> sentImpMapping = new ArrayList<Tuple2<String[], List<String>>>();
 	private static BufferedReader train;
@@ -80,6 +73,8 @@ public class SentenceCompare {
 			//mapping.print();
 			//mapping.getType();
 			mapping.writeAsCsv("resources\\mappings\\sentImpMap.csv");
+			
+				
         }
     	else{
     		CoreMap currentsentence = help.getSentences().get(0);
