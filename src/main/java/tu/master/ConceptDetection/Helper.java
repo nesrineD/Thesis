@@ -227,7 +227,7 @@ List<Tuple3<String, String, String>> impEdges = new ArrayList<Tuple3<String, Str
 				getNodesList().add(input.get(j));
 				getImpSet().add(input.get(j));
 				// add the implication degree	
-			getEdges().add(e);
+			edges.add(e);
 			
 				
 			}

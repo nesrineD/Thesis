@@ -62,13 +62,13 @@
 			<version>0.1.0</version>
 		</dependency>
 
-		<dependency>
+		<!--  <dependency>
 			<groupId>edu.cmu.lti</groupId>
 			<artifactId>ws4j</artifactId>
             <version>1.0.1</version>
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/ws4j.jar</systemPath>
-		</dependency>
+			<systemPath>C:\\Users\\Asus\\Desktop\\Masterarbeit\\ConceptDetection\\lib\\ws4j.jar</systemPath>
+		</dependency>-->
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>

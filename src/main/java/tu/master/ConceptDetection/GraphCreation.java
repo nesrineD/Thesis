@@ -262,6 +262,105 @@ public class GraphCreation {
 		
 	}
 	
+	
+	
+	/**
+	 * @return a map containing a mapping between the cluster ID and the color
+	 * @throws IOException
+	 */
+	public static Map<Long, String> clusterColoring()
+
+			throws IOException {
+		Map<Long, String> map = new HashMap<Long, String>();
+		List<String> colors = colorsSet();
+		Map <Long, List<String>> vertMappingList =  getVertMapping();
+		clusterMap = new PrintStream(new FileOutputStream("resources\\ClusterMap.txt"));
+		getVertMapping().forEach((k,v)-> clusterMap.println(("cluster ID " + k+ " list of vertices  " +v)));
+		
+		Iterator<Map.Entry<Long, List<String>>> p = vertMappingList.entrySet().iterator();
+		while (p.hasNext()) {
+			Long key = p.next().getKey();
+			// clusterId, color
+			map.put(key, colors.get(0));
+			colors.remove(0);
+		}
+		return map;
+	}
+	
+	/**
+	 * adds the implication edges to the list of testing edges
+	 * 
+	 * @return list of implication edges
+	 * @throws Exception
+	 */
+	public List<String> addImplications()
+			throws Exception {
+		
+		HashMap <String, Integer> impDegree = new HashMap <String, Integer>();
+		Graph<String, Long, String> impGraph = getTrainingGraph().filterOnEdges((Edge<String, String> edge) -> edge.getValue()
+				.equals("i"));	
+		List<Edge<String, String>> impEdges = impGraph.getEdges().collect();
+		List<String> implications = new ArrayList<String>();
+		for (int i = 0; i < testingList.size(); i++) {
+			for (Edge<String, String> e : impEdges) {
+				if (testingList.get(i).equals(e.getSource())) {
+					Tuple3<String, String, String> tupl = new Tuple3<String, String, String>(getTestingList().get(i),
+							e.getTarget(), "impl");
+					implications.add(e.getTarget());
+					if(impDegree.get (e.getTarget()) != null)
+					   impDegree.put (e.getTarget(),impDegree.get (e.getTarget())+1);
+					else
+						impDegree.put (e.getTarget(),1);
+					tedges.add(tupl);
+					
+				}
+			}
+		}
+		
+		    degree = new PrintStream(new FileOutputStream("resources\\ImpDegrees.txt"));
+			impDegree.forEach((k,v)-> degree.println(("implication is " + k+ "has degree " +v)));
+			 
+	
+		
+		return implications;
+		
+	}
+	
+	/**
+	 * @param vlist
+	 * @param input impSet contains the set of implications
+	 * @throws FileNotFoundException 
+	 */
+	public void addImplicationEdges(List<String> vlist, List<String> input) throws FileNotFoundException {
+		/*
+		 * if (!impl.getText().equals(null)) { parseImplication(impl.getText());
+		 * }
+		 */
+		for (int i = 0; i < vlist.size(); i++) {
+			for (int j = 0; j < input.size(); j++) {
+				Tuple3<String, String, String> e = new Tuple3<String, String, String>(vlist.get(i), input.get(j), "i");
+				getTestingList().add(input.get(j));
+				//getImpSet().add(input.get(j));
+				// add the implication degree	
+			tedges.add(e);
+			
+				
+			}
+		}
+}
+	/**
+	 * creates the graphml file to be used by yED
+	 * 
+	 * @throws Exception
+	 */
+	public void visualizeGraph(String path, List<String> nodes , List<Edge<String, String>>  edges,List<String> tnodes , List<Edge<String, String>>  tedges )
+			throws Exception {
+		GraphMLConverter gm = new GraphMLConverter();
+		Helper helper = new Helper();
+		//gm.convert(path, helper.getNodesList(), edgelist , getTestingList(), tedgelist);
+		gm.convert(path, nodes, edges, tnodes, tedges);
+		
+	}
 	/**
 	 * @return a list of colors to be used for the clusterColoring
 	 */
@@ -338,105 +437,6 @@ public class GraphCreation {
 		colors.add("#B0C4DE");
 		
 		return colors;
-		
-	}
-	
-	/**
-	 * @return a map containing a mapping between the cluster ID and the color
-	 * @throws IOException
-	 */
-	public static Map<Long, String> clusterColoring()
-
-			throws IOException {
-		Map<Long, String> map = new HashMap<Long, String>();
-		List<String> colors = colorsSet();
-		Map <Long, List<String>> vertMappingList =  getVertMapping();
-		clusterMap = new PrintStream(new FileOutputStream("resources\\ClusterMap.txt"));
-		getVertMapping().forEach((k,v)-> clusterMap.println(("cluster ID " + k+ " list of vertices  " +v)));
-		
-		Iterator<Map.Entry<Long, List<String>>> p = vertMappingList.entrySet().iterator();
-		while (p.hasNext()) {
-			Long key = p.next().getKey();
-			// clusterId, color
-			map.put(key, colors.get(0));
-			colors.remove(0);
-		}
-		return map;
-	}
-
-	public Graph<String, Long, String> testingGraph(List<Tuple3<String, String, String>> edges)
-			throws Exception {
-		
-		execution();
-		// add implications to the list of edges
-		addImplications();
-		DataSet<Tuple3<String, String, String>> Edges = env.fromCollection(edges);
-		Graph<String, NullValue, String> graph = Graph.fromTupleDataSet(Edges, env);
-		DataSet<Edge<String, String>> edgeSet = graph.getEdges();
-		setTedgelist( edgeSet.collect());
-		DataSet<Vertex<String, NullValue>> vertices = graph.getVertices();
-		
-		List<Vertex<String, NullValue>> list = vertices.collect();
-		List<Vertex<String, Long>> vlist = new ArrayList<Vertex<String, Long>>();
-		for (int i = 0; i < list.size(); i++) {
-			Vertex<String, Long> v = new Vertex<String, Long>(list.get(i).f0, 1L);
-			vlist.add(v);
-		}
-		DataSet<Vertex<String, Long>> vertex = env.fromCollection(vlist);
-		Graph<String, Long, String> fgraph = Graph.fromDataSet(vertex, edgeSet, env);
-		
-		return fgraph;
-	}
-	
-	/**
-	 * adds the implication edges to the list of testing edges
-	 * 
-	 * @return list of implication edges
-	 * @throws Exception
-	 */
-	public List<String> addImplications()
-			throws Exception {
-		
-		HashMap <String, Integer> impDegree = new HashMap <String, Integer>();
-		Graph<String, Long, String> impGraph = getTrainingGraph().filterOnEdges((Edge<String, String> edge) -> edge.getValue()
-				.equals("i"));	
-		List<Edge<String, String>> impEdges = impGraph.getEdges().collect();
-		List<String> implications = new ArrayList<String>();
-		for (int i = 0; i < testingList.size(); i++) {
-			for (Edge<String, String> e : impEdges) {
-				if (testingList.get(i).equals(e.getSource())) {
-					Tuple3<String, String, String> tupl = new Tuple3<String, String, String>(getTestingList().get(i),
-							e.getTarget(), "impl");
-					implications.add(e.getTarget());
-					if(impDegree.get (e.getTarget()) != null)
-					   impDegree.put (e.getTarget(),impDegree.get (e.getTarget())+1);
-					else
-						impDegree.put (e.getTarget(),1);
-					tedges.add(tupl);
-					
-				}
-			}
-		}
-		
-		    degree = new PrintStream(new FileOutputStream("resources\\ImpDegrees.txt"));
-			impDegree.forEach((k,v)-> degree.println(("implication is " + k+ "has degree " +v)));
-			 
-	
-		
-		return implications;
-		
-	}
-	/**
-	 * creates the graphml file to be used by yED
-	 * 
-	 * @throws Exception
-	 */
-	public void visualizeGraph(String path, List<String> nodes , List<Edge<String, String>>  edges,List<String> tnodes , List<Edge<String, String>>  tedges )
-			throws Exception {
-		GraphMLConverter gm = new GraphMLConverter();
-		Helper helper = new Helper();
-		//gm.convert(path, helper.getNodesList(), edgelist , getTestingList(), tedgelist);
-		gm.convert(path, nodes, edges, tnodes, tedges);
 		
 	}
 }

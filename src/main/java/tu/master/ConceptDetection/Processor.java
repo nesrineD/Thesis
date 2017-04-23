@@ -27,6 +27,8 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.ConfigConstants;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.core.fs.FileSystem;
+import org.apache.flink.core.fs.FileSystem.WriteMode;
 import org.apache.flink.graph.Edge;
 import org.apache.flink.graph.Graph;
 import org.apache.flink.graph.GraphAnalytic;
@@ -162,6 +164,7 @@ public class Processor extends JFrame {
 			 */
 
 		} else {
+
 			execution();
 			// Testing graph
 			String pathToTestgraphml = "resources\\Testing\\JayDickTest.graphml";
@@ -171,7 +174,7 @@ public class Processor extends JFrame {
 			Helper help = new Helper();
 			GraphCreation gcreate = new GraphCreation();
 
-			List<Tuple2<List<String>, List<String>>> sentImpMapping = new ArrayList<Tuple2<List<String>, List<String>>>();
+			List<Tuple2<String, String>> sentImpMapping = new ArrayList<Tuple2<String, String>>();
 
 			// create the training graph
 			train = new BufferedReader(new FileReader(pathToTrainingText));
@@ -193,52 +196,47 @@ public class Processor extends JFrame {
 				if (impl != null) {
 					help.addImplicationEdges(vertexList, help.parseImplication(help.getSentences().get(sent + 1)));
 					// fill the list of tuples sent, imp
-					Tuple2<List<String>, List<String>> sentTup = new Tuple2<List<String>, List<String>>(vertexList,
-							impl);
+					Tuple2<String, String> sentTup = new Tuple2<String, String>(vertexList.toString(), impl.toString());
 					sentImpMapping.add(sentTup);
 				}
 
 				// store the sentence and its implications in a CSV TextFile
-
-				sentImpMapping.forEach(System.out::println);
-				DataSet<Tuple2<List<String>, List<String>>> mapping = env.fromCollection(sentImpMapping);
-				mapping.print();
-				mapping.getType();
-				mapping.writeAsCsv("resources\\mappings\\sentImpMap.csv");
 				// mapping.writeAsText("resources\\mappings\\sentImplicationMap.txt");
 			}
-		//	ExecutionEnvironment envi = ExecutionEnvironment.getExecutionEnvironment();
-		//	DataSet<Tuple2<List<String>, List<String>>> map = envi
-		//			.readCsvFile("resources\\mappings\\sentImplicationMap.csv").types(String.class, String.class);
-		//	map.
-		//	System.out.println(" reading from Dataset  \n");
-		//	map.print();
+			DataSet<Tuple2<String, String>> mapping = env.fromCollection(sentImpMapping);
+			mapping.writeAsText("resources\\map\\sentImpMap.txt", FileSystem.WriteMode.OVERWRITE);
+
+			ExecutionEnvironment envi = ExecutionEnvironment.getExecutionEnvironment();
+			DataSet<String> map = envi.readTextFile("resources\\map\\sentImpMap.txt");
+			// map.
+			System.out.println(" reading from Dataset  \n");
+			map.print();
 			// initial graph = graph before clustering
-			// gcreate.setTrainingGraph(gcreate.initialGraph(help.getEdges()));
+			gcreate.setTrainingGraph(gcreate.initialGraph(help.getEdges()));
 			// create the testing graph
-			/*
-			 * BufferedReader br = new BufferedReader(new
-			 * FileReader(pathToTestingText)); String read = null; while ((read
-			 * = br.readLine()) != null) {
-			 * help.setTsentences(help.performAnnotation(read)); } // add follow
-			 * and child edges for (int sent = 0; sent <
-			 * help.getTsentences().size(); sent += 1) { List<String> vertexList
-			 * = new ArrayList<String>(); vertexList =
-			 * help.parseISentence(help.getTsentences().get(sent)); //
-			 * logger.info(" the new list is " + vertexList);
-			 * gcreate.getTestingList().addAll(vertexList); // //
-			 * parseISentence(getSentences().get(sent));
-			 * help.followEdges(gcreate.getTedges(), help.getListOfvertices());
-			 * help.childEdges(gcreate.getTedges(),
-			 * help.semanticGraph(help.getTsentences().get(sent))); } // call
-			 * testing graph method Graph<String, Long, String> graph =
-			 * gcreate.testingGraph(gcreate.getTedges());
-			 * System.out.println(" testing edges are ");
-			 * graph.getEdges().print();
-			 * gcreate.visualizeGraph(pathToTestgraphml, help.getNodesList(),
-			 * gcreate.getEdgelist(), gcreate.getTestingList(),
-			 * gcreate.getTedgelist());
-			 */
+
+			BufferedReader br = new BufferedReader(new FileReader(pathToTestingText));
+			String read = null;
+			while ((read = br.readLine()) != null) {
+				help.setTsentences(help.performAnnotation(read));
+			}
+			// add follow and child edges
+			for (int sent = 0; sent < help.getTsentences().size(); sent += 1) {
+				List<String> vertexList = new ArrayList<String>();
+				vertexList = help.parseISentence(help.getTsentences().get(sent)); //
+				logger.info(" the new list is " + vertexList);
+				gcreate.getTestingList().addAll(vertexList); // //
+				parseISentence(getSentences().get(sent));
+				help.followEdges(gcreate.getTedges(), help.getListOfvertices());
+				help.childEdges(gcreate.getTedges(), help.semanticGraph(help.getTsentences().get(sent)));
+			}
+			// call testing graph method
+			Graph<String, Long, String> graph = gcreate.testingGraph(gcreate.getTedges());
+			System.out.println(" testing edges are ");
+			graph.getEdges().print();
+			gcreate.visualizeGraph(pathToTestgraphml, help.getNodesList(), gcreate.getEdgelist(),
+					gcreate.getTestingList(), gcreate.getTedgelist());
+
 			// }
 
 		}
