@@ -142,22 +142,9 @@ public class SimilarityMeasure {
 	    else
 		rank = 0;
 
-	    verticesrank = verticesrank + rank;
-	  //  System.out.println(" Rank  is  " + rank + " \n ");
-	    /* Optional<Tuple2<String, List<String>>> nB = listofNeighborsB.stream()
-	    .filter(nodeDeg -> nodeDeg.f0.equals(c)).findAny();
-    if (nB.isPresent()) {
-	ib = nB.get().f1;
-    }*/
-  /*  List<String> ia = listofNeighborsA.stream()
-	    .filter(nodeDeg -> nodeDeg.f0.equals(c)).findAny().get().f1;
-    List<String> ib = listofNeighborsB.stream()
-	    .filter(nodeDeg -> nodeDeg.f0.equals(c)).findAny().get().f1;*/
-    /*System.out.println(" vertex is \n " + c + " neighbors in first graph \n");
-    ia.forEach(System.out::println);
-    System.out.println(" vertex is \n " + c + " neighbors in second graph \n");
-    ib.forEach(System.out::println);*/
-		
+	    verticesrank +=  rank;
+	  
+  
 
 	}
 	if (similar1.size() != 0) {
@@ -173,7 +160,7 @@ public class SimilarityMeasure {
     }
     private boolean isSimilar(final String word1 , final String word2){
 	    RelatednessCalculator rc = new WuPalmer(db);
-	    return  rc.calcRelatednessOfWords(word1, word2) > 0.75 ;
+	    return  rc.calcRelatednessOfWords(word1, word2) > 0.9 ;
 	}
 
 }
