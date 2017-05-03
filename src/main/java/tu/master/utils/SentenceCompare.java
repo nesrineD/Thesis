@@ -98,7 +98,7 @@ public class SentenceCompare {
 		return sentences;
 	}
 
-	public static Tuple2<String[], Double> relatednessMeasure(List<String[]> sentences, List<String[]> trainingSentences)
+	public Tuple2<String[], Double> relatednessMeasure(List<String[]> sentences, List<String[]> trainingSentences)
 			throws Exception {
 		// sentences is a list of just one sentence to match
 		
@@ -123,14 +123,13 @@ public class SentenceCompare {
 		Tuple2<String[], Double> SentRelate = new Tuple2<String[], Double>(mostSimSent, maxR);
 		return SentRelate;
 	}
-
+/*
 	public static void main(String[] args) throws Exception {
 		
 		
 		List<String[]> trainingSentences = new ArrayList<String[]>();
 		List<String[]> sentences = new ArrayList<String[]>();
 		String pathToTestingSentence = "resources\\sentence.txt";
-		String pathToTrainingText = "resources\\sentence2.txt";
 	       
 		Helper help = new Helper();
 		GraphCreation gcreate = new GraphCreation();
@@ -203,6 +202,6 @@ public class SentenceCompare {
 		gcreate.visualizeGraph("resources\\sentence.graphml",
 				gcreate.getTestingList(), graph.getEdges().collect(),null,null);
 
-	}
+	}*/
 
 }

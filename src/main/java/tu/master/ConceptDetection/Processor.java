@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.apache.log4j.Logger;
 
 import edu.stanford.nlp.util.CoreMap;
 import tu.master.termfrequency.WordCount;
+import tu.master.utils.SentenceCompare;
 
 /**
  * @author Nesrine
@@ -65,6 +67,8 @@ public class Processor extends JFrame {
 	boolean training = false;
 	private BufferedReader br;
 	private String[] sentence;
+	List<String> implications = new ArrayList<String>();
+	List<Tuple2<String, String>> sentImpMapping = new ArrayList<Tuple2<String, String>>();
 
 	private BufferedReader bufferedReader;
 
@@ -86,18 +90,23 @@ public class Processor extends JFrame {
 		float ranking;
 		float tranking;
 		if (training == true) {
-			String pathToTrainingText1 = "resources\\DigitalP\\digitalPlabled.txt";
-			String PathToNodesMap1 = "resources\\DigitalP\\ClusterMap.txt";
+			String pathToTrainingText = "resources\\sentence2.txt";
+			// String pathToTrainingText =
+			// "resources\\DigitalP\\digitalPlabled.txt";
 			String pathToTrainingText2 = "resources\\PsyOfDreams\\PsyDreamsLabled.txt";
 			String PathToNodesMap2 = "resources\\PsyOfDreams\\ClusterMap.txt";
-			String pathToTrainingText3 = "resources\\Dreams\\DreamPsyLab.txt";
+			// String pathToTrainingText3 =
+			// "resources\\Dreams\\DreamPsyLab.txt";
 			String PathToNodesMap3 = "resources\\Dreams\\ClusterMap.txt";
 			String pathToTrainingText4 = "resources\\PsyOfSinging\\PsyLabeld.txt";
 			String PathToNodesMap4 = "resources\\PsyOfSinging\\ClusterMap.txt";
 			String pathToTrainingText5 = "resources\\PSEthics\\PSethicsLabeled.txt";
 			String PathToNodesMap5 = "resources\\PSEthics\\ClusterMap.txt";
-			// String pathToImpgraphml1 = "resources\\f.graphml";
-			String pathTographml = "resources\\f.graphml";
+			String pathToImpgraphml2 = "resources\\sentence2.graphml";
+			String pathTographml = "resources\\sentence.graphml";
+			// trainingGraph(pathToTrainingText, pathTographml,
+			// PathToNodesMap3,"resources\\DigitalP\\sentenceImp.csv");
+			trainingGraph(pathToTrainingText, pathToImpgraphml2, PathToNodesMap3, "resources\\sentenceImp.csv");
 			// String pathToText = "resources\\PSEthics\\PSEthics.txt";
 			// String pathToTermFreqFile = "resources\\PSEthics\\TermFreq.txt";
 			// String pathToImpDegFile =
@@ -126,12 +135,18 @@ public class Processor extends JFrame {
 			// PathToNodesMap1);
 			// trainingGraph(pathToTrainingText2, pathTographml,
 			// PathToNodesMap2);
-			trainingGraph(pathToTrainingText3, pathTographml, PathToNodesMap3);
-			trainingGraph(pathToTrainingText4, pathTographml, PathToNodesMap4);
-			trainingGraph(pathToTrainingText5, pathTographml, PathToNodesMap5);
-			trainingGraph(pathToTrainingText6, pathTographml, PathToNodesMap6);
-			trainingGraph(pathToTrainingText7, pathTographml, PathToNodesMap7);
-			trainingGraph(pathToTrainingText8, pathTographml, PathToNodesMap8);
+			// trainingGraph(pathToTrainingText, pathTographml,
+			// PathToNodesMap3);
+			// trainingGraph(pathToTrainingText4, pathTographml,
+			// PathToNodesMap4);
+			// trainingGraph(pathToTrainingText5, pathTographml,
+			// PathToNodesMap5);
+			// trainingGraph(pathToTrainingText6, pathTographml,
+			// PathToNodesMap6);
+			// trainingGraph(pathToTrainingText7, pathTographml,
+			// PathToNodesMap7);
+			// trainingGraph(pathToTrainingText8, pathTographml,
+			// PathToNodesMap8);
 			// impDegrees(pathToImpDegFile, graph1);
 
 			// impDegrees(pathToImpDegFile2, graph2);
@@ -165,79 +180,82 @@ public class Processor extends JFrame {
 
 		} else {
 
-			execution();
-			// Testing graph
-			String pathToTestgraphml = "resources\\Testing\\JayDickTest.graphml";
-			String pathToTrainingText = "resources\\JayDickText\\JayDickLabledT.txt";
-			String pathToTestingSentence = "resources\\JayDickText\\testingSentence.txt";
-			// String pathToTestingText = "resources\\DigitalP\\digitalP.txt";
+			SentenceCompare compare = new SentenceCompare();
+			List<String[]> trainingSentences = new ArrayList<String[]>();
+			
+			// String pathToTestingSentence  ="resources\\PsyOfDreams\\dreams.txt";;
+			String pathToTestingSentence = "resources\\sentence.txt";
 			Helper help = new Helper();
-			GraphCreation gcreate = new GraphCreation();
-
-			List<Tuple2<String, String>> sentImpMapping = new ArrayList<Tuple2<String, String>>();
-
-			// create the training graph
-			train = new BufferedReader(new FileReader(pathToTrainingText));
-			String readString = null;
-			while ((readString = train.readLine()) != null) {
-				help.setSentences(help.performAnnotation(readString));
-			}
-
-			for (int sent = 0; sent < help.getSentences().size() - 1; sent += 2) {
-				CoreMap currentsentence = help.getSentences().get(sent);
-				List<String> vertexList = new ArrayList<String>();
-				vertexList = help.parseISentence(currentsentence);
-
-				// sentence = (String[]) vertexList.toArray();
-				help.getNodesList().addAll(vertexList);
-				help.followEdges(help.getEdges(), help.getListOfvertices());
-				help.childEdges(help.getEdges(), help.semanticGraph(currentsentence));
-				List<String> impl = help.parseImplication(help.getSentences().get(sent + 1));
-				if (impl != null) {
-					help.addImplicationEdges(vertexList, help.parseImplication(help.getSentences().get(sent + 1)));
-					// fill the list of tuples sent, imp
-					Tuple2<String, String> sentTup = new Tuple2<String, String>(vertexList.toString(), impl.toString());
-					sentImpMapping.add(sentTup);
-				}
-
-				// store the sentence and its implications in a CSV TextFile
-				// mapping.writeAsText("resources\\mappings\\sentImplicationMap.txt");
-			}
-			DataSet<Tuple2<String, String>> mapping = env.fromCollection(sentImpMapping);
-			mapping.writeAsText("resources\\map\\sentImpMap.txt", FileSystem.WriteMode.OVERWRITE);
-
-			ExecutionEnvironment envi = ExecutionEnvironment.getExecutionEnvironment();
-			DataSet<String> map = envi.readTextFile("resources\\map\\sentImpMap.txt");
-			// map.
-			System.out.println(" reading from Dataset  \n");
+			
+			// read the sentence implication mapping
+			ExecutionEnvironment envi = ExecutionEnvironment.createLocalEnvironment();
+			envi.setParallelism(1);
+			DataSet<Tuple2<String, String>> map = envi.readCsvFile("resources\\sentenceImp.csv").fieldDelimiter("|")
+					.lineDelimiter("\n").types(String.class, String.class);
 			map.print();
-			// initial graph = graph before clustering
-			gcreate.setTrainingGraph(gcreate.initialGraph(help.getEdges()));
-			// create the testing graph
-
-			BufferedReader br = new BufferedReader(new FileReader(pathToTestingText));
+			System.out.println(" reading from Dataset  \n");
+			List<Tuple2<String, String>> mapping = map.collect();
+			// Store all the sentences in a list of strings
+			for (Tuple2<String, String> tup : mapping) {
+				String senti = tup.f0;
+				List<String> psentences = help.parseImplication(help.performAnnotation(senti).get(0));
+				trainingSentences.add(psentences.toArray(new String[0]));
+			}
+			
+			
+			GraphCreation gcreate = new GraphCreation();
+			br = new BufferedReader(new FileReader(pathToTestingSentence));
 			String read = null;
 			while ((read = br.readLine()) != null) {
 				help.setTsentences(help.performAnnotation(read));
 			}
-			// add follow and child edges
+			System.out.println(" The testing sentences are :\n");
+			help.getTsentences().forEach(System.out::print);
 			for (int sent = 0; sent < help.getTsentences().size(); sent += 1) {
+				List<String[]> sentences = new ArrayList<String[]>();
 				List<String> vertexList = new ArrayList<String>();
 				vertexList = help.parseISentence(help.getTsentences().get(sent)); //
-				logger.info(" the new list is " + vertexList);
+				sentences.add(vertexList.toArray(new String[0]));
 				gcreate.getTestingList().addAll(vertexList); // //
-				parseISentence(getSentences().get(sent));
+				// parseISentence(getSentences().get(sent));
 				help.followEdges(gcreate.getTedges(), help.getListOfvertices());
-				help.childEdges(gcreate.getTedges(), help.semanticGraph(help.getTsentences().get(sent)));
-			}
-			// call testing graph method
-			Graph<String, Long, String> graph = gcreate.testingGraph(gcreate.getTedges());
-			System.out.println(" testing edges are ");
-			graph.getEdges().print();
-			gcreate.visualizeGraph(pathToTestgraphml, help.getNodesList(), gcreate.getEdgelist(),
-					gcreate.getTestingList(), gcreate.getTedgelist());
+				help.childEdges(gcreate.getTedges(), help.semanticGraph(help.getTsentences().get(0)));
+				// mapping.forEach(System.out::println);
+				
+				long t0 = System.currentTimeMillis();
+				Tuple2<String[], Double> relatedness = compare.relatednessMeasure(sentences, trainingSentences);
+				long t1 = System.currentTimeMillis();
+				System.out.println("Done in " + (t1 - t0) + " msec.");
+				System.out.println(" the maximum relatedness is  " + relatedness.f1);
+				System.out.println(" the most similar sentence  is \n ");
+				String[] similarSent = relatedness.f0;
+				for (int i = 0; i < similarSent.length; i++)
+					System.out.println(similarSent[i]);
+			
 
-			// }
+				List<Tuple2<String, String>> implicationTup = mapping.stream()
+						.filter(k -> k.f0.equals(Arrays.toString(similarSent))).collect(Collectors.toList());
+
+				String inducedImp = implicationTup.get(0).f1;
+				System.out.println(" the induced implications are \n " + inducedImp);
+
+				List<String> impl = help.parseImplication(help.performAnnotation(inducedImp).get(0));
+
+				implications.addAll(impl);
+				
+				gcreate.addImplicationEdges(vertexList, impl);
+				// call testing graph method
+				System.out.println(" the testing sentence is ");
+				vertexList.forEach(System.out::println);
+			}
+			List<Tuple3<String, String, String>> testingEdges = gcreate.getTedges();
+			Graph<String, Long, String> graph = gcreate.initialGraph(testingEdges);
+			System.out.println(" testing edges are ");
+			List<Edge<String, String>> edges = graph.getEdges().collect();
+			edges.forEach(System.out::println);
+			gcreate.clustering(graph.getUndirected(), "nodesMap.txt");
+			gcreate.visualizeGraph("resources\\testingGraph.graphml", gcreate.getTestingList(), edges, implications,
+					null);
 
 		}
 	}
@@ -262,9 +280,11 @@ public class Processor extends JFrame {
 	}
 
 	public Graph<String, Long, String> trainingGraph(String pathToTrainingText, String pathTographm1l,
-			String PathToNodesMap) throws Exception {
+			String PathToNodesMap, String PathToSentImp) throws Exception {
+
 		Helper help = new Helper();
 		GraphCreation gcreate = new GraphCreation();
+		List<String[]> sentences = new ArrayList<String[]>();
 
 		String readString = null;
 		bufferedReader = new BufferedReader(new FileReader(pathToTrainingText));
@@ -276,18 +296,27 @@ public class Processor extends JFrame {
 
 			List<String> vertexList = new ArrayList<String>();
 			vertexList = help.parseISentence(help.getSentences().get(sent));
+			sentences.add(vertexList.toArray(new String[0]));
 			help.getNodesList().addAll(vertexList);
 			help.followEdges(help.getEdges(), help.getListOfvertices());
 			help.childEdges(help.getEdges(), help.semanticGraph(help.getSentences().get(sent)));
-			if (help.parseImplication(help.getSentences().get(sent + 1)) != null) {
+			List<String> impl = help.parseImplication(help.getSentences().get(sent + 1));
+			if (impl != null) {
 				help.addImplicationEdges(vertexList, help.parseImplication(help.getSentences().get(sent + 1)));
+				Tuple2<String, String> sentTup = new Tuple2<String, String>(vertexList.toString(), impl.toString());
+				sentImpMapping.add(sentTup);
 
 			}
 		}
+		ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment();
+		env.setParallelism(1);
+		DataSet<Tuple2<String, String>> mapping = env.fromCollection(sentImpMapping);
+		mapping.writeAsCsv(PathToSentImp, "\n", "|", WriteMode.OVERWRITE);
+		env.execute();
 		gcreate.setTrainingGraph(gcreate.initialGraph(help.getEdges()));
 		Graph<String, Long, String> graph = gcreate.getTrainingGraph();
 		gcreate.clustering(graph.getUndirected(), PathToNodesMap);
-		gcreate.visualizeGraph(pathTographm1l, help.getNodesList(), gcreate.getEdgelist(), null, null);
+		gcreate.visualizeGraph(pathTographm1l, help.getNodesList(), gcreate.getEdgelist(), implications, null);
 		return graph;
 	}
 

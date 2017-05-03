@@ -1,0 +1,4 @@
+ cluster ID 3list of nodes [happi, dream]
+ cluster ID 4list of nodes [jump, activ]
+ cluster ID 7list of nodes [sofa, kid]
+ cluster ID 8list of nodes [everybodi, life, wish]

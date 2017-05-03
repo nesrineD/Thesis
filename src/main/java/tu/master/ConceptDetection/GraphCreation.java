@@ -353,7 +353,7 @@ public class GraphCreation {
 	 * 
 	 * @throws Exception
 	 */
-	public void visualizeGraph(String path, List<String> nodes , List<Edge<String, String>>  edges,List<String> tnodes , List<Edge<String, String>>  tedges )
+	public void visualizeGraph(String path, List<String> nodes , List<Edge<String, String>>  edges, List<String> tnodes , List<Edge<String, String>>  tedges )
 			throws Exception {
 		GraphMLConverter gm = new GraphMLConverter();
 		Helper helper = new Helper();

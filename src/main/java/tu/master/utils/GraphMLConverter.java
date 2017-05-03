@@ -80,14 +80,22 @@ public class GraphMLConverter {
 		graph.setAttribute("id", "G");
 		graph.setAttribute("edgedefault", "directed");
 		graphml.addContent(graph);
-		
-	boolean training = true;
-	if(training  == true){	
+	
 		
 		for (int i = 0; i < nodes.size(); i++) {
 			int id = nodes.indexOf(nodes.get(i));
 			String node = nodes.get(i);
+			
+			//Optional<String> same = tnodes.stream().filter(p -> p.equals(node)).findAny();
+			if (!tnodes.isEmpty()){
+			if (!tnodes.contains(node))
 			addNode(id, node, graph, graphml);
+			else 
+				addTNode(id, node, graph, graphml);
+			}
+			else
+				addNode(id, node, graph, graphml);
+				
 			// addTNode for testing node
 		}
 		
@@ -111,77 +119,6 @@ public class GraphMLConverter {
 			addEdge(id, idSource, idTarget, source, target, value, graph, graphml);
 			
 		}
-	}
-	else{	
-		// testing graph
-				for (int i = 0; i < tnodes.size(); i++) {
-					int id = tnodes.indexOf(tnodes.get(i));// + 8000;
-					String tnode = tnodes.get(i);
-					
-						addTNode(id, tnode, graph, graphml);
-					
-				}
-				
-				for (int i = 0; i < tedges.size(); i++) {
-					Edge<String, String> tedge = tedges.get(i);
-					int id = tedges.indexOf(tedge); //
-					System.out.println(" id of the edge " + edges.get(i) + " index " + i 
-							+ " is " + id);
-					String source = tedge.getSource();
-					// URL urlsrc = new URL ("http://"+source) ;
-					String target = tedge.getTarget();
-					// URL urltarget = new URL ("http://"+target) ;
-					String value = tedge.getValue();
-					int idSource = 0;
-					
-					/*if (!same.isPresent())
-						idSource = tnodes.indexOf(source) + 8000;
-					else*/
-					idSource = tnodes.indexOf(source);
-					int idTarget = 0;
-					//Optional<String> tsame = nodes.stream().filter(p -> p.equals(target)).findAny();
-					
-						
-				if (value.equals("impl")){	
-						System.out.println ( "implication edge ");
-						int idn = nodes.indexOf(target);
-						String node = nodes.get(idn);
-						System.out.println ( "implication node "+ node ); 
-						Optional<String> same = tnodes.stream().filter(p -> p.equals(node)).findAny();
-						// + 8000;
-						
-						
-						System.out.println (" not present  "+!same.isPresent() );
-						if (!same.isPresent()){
-							
-							addNode(idn, node, graph, graphml); 
-							System.out.println ( "implication node "+ node +"id n "+ idn); 
-							idTarget = idn;
-							System.out.println ( "implication node "+ node +" doesn't exist and has for id " +idTarget); 
-									
-						}
-						
-						
-						else {
-						idTarget = tnodes.indexOf(node) ; 
-						System.out.println ( "implication node "+ node +" already exists and has for id " +idTarget); 
-						
-						}
-					}
-					else 
-						idTarget = tnodes.indexOf(target);
-					if (idSource < 0 || idTarget < 0) {
-						System.err.println("bad edge: " + tedge);
-					}
-					if (idSource < 0) {
-						logger.error("bad source :" + source);
-					}
-					if (idTarget < 0) {
-						logger.error("bad target :" + target);
-					}
-					addEdge(id, idSource, idTarget, source, target, value, graph, graphml);
-				}
-	}
 		// printAll(document);
 		save(fileName, document);
 	}
